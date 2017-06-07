@@ -233,11 +233,10 @@ function ee_update_wp_cli()
     if [ "${WP_CLI_PATH}" != "" ]; then
         # Get WP-CLI version
         WP_CLI_VERSION=$(${PHP_PATH} ${WP_CLI_PATH} --allow-root cli version | awk '{ print $2 }')
-        dpkg --compare-versions ${WP_CLI_VERSION} lt 0.24.1
+        dpkg --compare-versions ${WP_CLI_VERSION} lt 1.2.1
         # Update WP-CLI version
         if [ "$?" == "0" ]; then
-           wget -qO ${WP_CLI_PATH} https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-           chmod +x ${WP_CLI_PATH}
+           ${PHP_PATH} ${WP_CLI_PATH} --allow-root cli update --yes
         fi
     fi
 }
@@ -800,4 +799,4 @@ echo
 ee_lib_echo_info "source /etc/bash_completion.d/ee_auto.rc"
 echo
 ee_lib_echo "EasyEngine (ee) installed/updated successfully"
-ee_lib_echo "EasyEngine (ee) help: http://docs.rtcamp.com/easyengine/"
+ee_lib_echo "EasyEngine (ee) help: https://easyengine.io/docs/"

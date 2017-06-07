@@ -197,9 +197,9 @@ class EEStackUpgradeController(CementBaseController):
 
             if self.app.pargs.wpcli:
                 if os.path.isfile('/usr/bin/wp'):
-                    packages = packages + [["https://github.com/wp-cli/wp-cli/"
-                                            "releases/download/v{0}/"
-                                            "wp-cli-{0}.phar"
+                    packages = packages + [["https://raw.githubusercontent.com/"
+                                            "wp-cli/builds/gh-pages/phar/"
+                                            "wp-cli.phar"
                                             "".format(EEVariables.ee_wp_cli),
                                             "/usr/bin/wp",
                                             "WP-CLI"]]
