@@ -15,6 +15,7 @@ class EEVariables():
     ee_version = "3.7.4"
     # EasyEngine packages versions
     ee_wp_cli = "0.24.1"
+    ee_composer = "1.4.2"
     ee_adminer = "4.2.5"
     ee_roundcube = "1.1.4"
    # ee_vimbadmin = "3.0.12"
@@ -24,6 +25,11 @@ class EEVariables():
     ee_wpcli_path = os.popen('which wp | tr "\n" " "').read()
     if ee_wpcli_path == '':
         ee_wpcli_path = '/usr/bin/wp '
+
+    # Get composer path
+    ee_composer_path = os.popen('which composer | tr "\n" " "').read()
+    if ee_composer_path == '':
+        ee_composer_path = '/usr/local/bin/composer '
 
     # Current date and time of System
     ee_date = datetime.datetime.now().strftime('%d%b%Y%H%M%S')

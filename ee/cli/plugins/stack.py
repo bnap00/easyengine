@@ -72,6 +72,8 @@ class EEStackController(CementBaseController):
                 dict(help='Install Postfix stack', action='store_true')),
             (['--wpcli'],
                 dict(help='Install WPCLI stack', action='store_true')),
+            (['--composer'],
+                dict(help='Install composer stack', action='store_true')),
             (['--phpmyadmin'],
                 dict(help='Install PHPMyAdmin stack', action='store_true')),
             (['--adminer'],
@@ -2164,7 +2166,7 @@ class EEStackController(CementBaseController):
                (not self.app.pargs.php) and (not self.app.pargs.mysql) and
                (not self.app.pargs.postfix) and (not self.app.pargs.wpcli) and
                (not self.app.pargs.phpmyadmin) and (not self.app.pargs.hhvm)
-               and (not self.app.pargs.pagespeed) and
+               and (not self.app.pargs.pagespeed) and (not self.app.pargs.composer)
                (not self.app.pargs.adminer) and (not self.app.pargs.utils) and
                (not self.app.pargs.mailscanner) and (not self.app.pargs.all)
                and (not self.app.pargs.redis) and
@@ -2182,6 +2184,7 @@ class EEStackController(CementBaseController):
                 self.app.pargs.php = True
                 self.app.pargs.mysql = True
                 self.app.pargs.wpcli = True
+                self.app.pargs.composer = True 
                 self.app.pargs.postfix = True
 
             if self.app.pargs.admin:
@@ -2353,6 +2356,17 @@ class EEStackController(CementBaseController):
                 else:
                     Log.debug(self, "WP-CLI is already installed")
                     Log.info(self, "WP-CLI is already installed")
+
+            if self.app.pargs.composer:
+                Log.debug(self, "Setting packages variable for composer")
+                if not EEShellExec.cmd_exec(self, "which composer"):
+                    packages = packages + [["https://getcomposer.org/composer.phar",
+                                            "/usr/local/bin/composer",
+                                            "composer"]]
+                else:
+                    Log.debug(self, "composer is already installed")
+                    Log.info(self, "composer is already installed")
+
             if self.app.pargs.phpmyadmin:
                 Log.debug(self, "Setting packages varible for phpMyAdmin ")
                 packages = packages + [["https://github.com/phpmyadmin/"
@@ -2499,7 +2513,7 @@ class EEStackController(CementBaseController):
         if ((not self.app.pargs.web) and (not self.app.pargs.admin) and
            (not self.app.pargs.mail) and (not self.app.pargs.nginx) and
            (not self.app.pargs.php) and (not self.app.pargs.php7) and (not self.app.pargs.mysql) and
-           (not self.app.pargs.postfix) and (not self.app.pargs.wpcli) and
+           (not self.app.pargs.postfix) and (not self.app.pargs.wpcli) and (not self.app.pargs.composer) and
            (not self.app.pargs.phpmyadmin) and (not self.app.pargs.hhvm) and
            (not self.app.pargs.adminer) and (not self.app.pargs.utils) and
            (not self.app.pargs.mailscanner) and (not self.app.pargs.all) and
@@ -2520,6 +2534,7 @@ class EEStackController(CementBaseController):
             self.app.pargs.php = True
             self.app.pargs.mysql = True
             self.app.pargs.wpcli = True
+            self.app.pargs.composer = True
             self.app.pargs.postfix = True
 
         if self.app.pargs.admin:
@@ -2600,6 +2615,12 @@ class EEStackController(CementBaseController):
                 packages = packages + ['/usr/bin/wp']
             else:
                 Log.warn(self, "WP-CLI is not installed with EasyEngine")
+        if self.app.pargs.composer:
+            Log.debug(self, "Removing package variable of composer ")
+            if os.path.isfile('/usr/local/bin/composer'):
+                packages = packages + ['/usr/local/bin/composer']
+            else:
+                Log.warn(self, "composer is not installed with EasyEngine")
         if self.app.pargs.phpmyadmin:
             Log.debug(self, "Removing package variable of phpMyAdmin ")
             packages = packages + ['{0}22222/htdocs/db/pma'
@@ -2676,7 +2697,7 @@ class EEStackController(CementBaseController):
         if ((not self.app.pargs.web) and (not self.app.pargs.admin) and
            (not self.app.pargs.mail) and (not self.app.pargs.nginx) and
            (not self.app.pargs.php) and (not self.app.pargs.php7) and (not self.app.pargs.mysql) and
-           (not self.app.pargs.postfix) and (not self.app.pargs.wpcli) and
+           (not self.app.pargs.postfix) and (not self.app.pargs.wpcli) and (not self.app.pargs.composer) and
            (not self.app.pargs.phpmyadmin) and (not self.app.pargs.hhvm) and
            (not self.app.pargs.adminer) and (not self.app.pargs.utils) and
            (not self.app.pargs.mailscanner) and (not self.app.pargs.all) and
@@ -2697,6 +2718,7 @@ class EEStackController(CementBaseController):
             self.app.pargs.php = True
             self.app.pargs.mysql = True
             self.app.pargs.wpcli = True
+            self.app.pargs.composer = True
             self.app.pargs.postfix = True
 
         if self.app.pargs.admin:
@@ -2776,6 +2798,12 @@ class EEStackController(CementBaseController):
                 packages = packages + ['/usr/bin/wp']
             else:
                 Log.warn(self, "WP-CLI is not installed with EasyEngine")
+        if self.app.pargs.composer:
+            Log.debug(self, "Purge package variable composer")
+            if os.path.isfile('/usr/local/bin/composer'):
+                packages = packages + ['/usr/local/bin/composer']
+            else:
+                Log.warn(self, "composer is not installed with EasyEngine")
         if self.app.pargs.phpmyadmin:
             packages = packages + ['{0}22222/htdocs/db/pma'.
                                    format(EEVariables.ee_webroot)]

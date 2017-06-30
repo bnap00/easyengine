@@ -57,6 +57,12 @@ class CliTestCaseStack(test.EETestCase):
         self.app.run()
         self.app.close()
 
+    def test_ee_cli_stack_purge_composer(self):
+        self.app = get_test_app(argv=['stack', 'purge', '--composer'])
+        self.app.setup()
+        self.app.run()
+        self.app.close()
+
     def test_ee_cli_stack_purge_phpmyadmin(self):
         self.app = get_test_app(argv=['stack', 'purge', '--phpmyadmin'])
         self.app.setup()

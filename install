@@ -242,6 +242,23 @@ function ee_update_wp_cli()
     fi
 }
 
+function ee_update_composer()
+{
+    ee_lib_echo "Updating composer version to resolve compatibility issue."
+    PHP_PATH=$(which php)
+    COMPOSER_PATH=$(which composer)
+    if [ "${COMPOSER_PATH}" != "" ]; then
+        # Get COMPOSER version
+        COMPOSER_VERSION=$(${PHP_PATH} ${COMPOSER_PATH} --V | awk '{ print $3 }')
+        dpkg --compare-versions ${COMPOSER_VERSION} lt 1.4.2
+        # Update Composer version
+        if [ "$?" == "0" ]; then
+           curl -sS https://getcomposer.org/installer | php; mv composer.phar ${COMPOSER_PATH}
+           chmod +x ${COMPOSER_PATH}
+        fi
+    fi
+}
+
 function check_pagespeed()
 {
    ee_lib_echo_info "Please Note: We have removed pagespeed from current version of our nginx build."
@@ -785,6 +802,7 @@ else
                 service php5-fpm restart &>> /dev/null
             fi
             ee_update_wp_cli | tee -ai $ee_install_log
+            ee_update_composer | tee -ai $ee_install_log
         else
             ee_lib_error "Not updating EasyEngine to $ee_version_new, exit status = " 1
         fi

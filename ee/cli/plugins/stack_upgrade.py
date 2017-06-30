@@ -44,6 +44,8 @@ class EEStackUpgradeController(CementBaseController):
                 dict(help='Upgrade Postfix stack', action='store_true')),
             (['--wpcli'],
                 dict(help='Upgrade WPCLI', action='store_true')),
+            (['--composer'],
+                dict(help='Upgrade composer', action='store_true')),
             (['--redis'],
                 dict(help='Upgrade Redis', action='store_true')),
             (['--php56'],
@@ -116,7 +118,7 @@ class EEStackUpgradeController(CementBaseController):
             if ((not self.app.pargs.web) and (not self.app.pargs.nginx) and
                (not self.app.pargs.php) and (not self.app.pargs.mysql) and
                (not self.app.pargs.postfix) and (not self.app.pargs.hhvm) and
-               (not self.app.pargs.mailscanner) and (not self.app.pargs.all)
+               (not self.app.pargs.mailscanner) and (not self.app.pargs.all)  and (not self.app.pargs.composer)
                and (not self.app.pargs.wpcli) and (not self.app.pargs.redis) and (not self.app.pargs.nginxmainline)):
                 self.app.pargs.web = True
 
@@ -133,6 +135,7 @@ class EEStackUpgradeController(CementBaseController):
                 self.app.pargs.mysql = True
                 self.app.pargs.postfix = True
                 self.app.pargs.wpcli = True
+                self.app.pargs.composer = True
 
             if self.app.pargs.mail:
                 self.app.pargs.nginx = True
@@ -206,6 +209,14 @@ class EEStackUpgradeController(CementBaseController):
                 else:
                     Log.info(self, "WPCLI is not installed with EasyEngine")
 
+            if self.app.pargs.composer:
+                if os.path.isfile('/usr/local/bin/composer'):
+                    packages = packages + [["https://getcomposer.org/composer.phar",
+                                            "/usr/local/bin/composer",
+                                            "composer"]]
+                else:
+                    Log.info(self, "composer is not installed with EasyEngine")
+
             if self.app.pargs.mailscanner:
                 if EEAptGet.is_installed(self, 'amavisd-new'):
                     apt_packages = (apt_packages + EEVariables.ee_mailscanner)
@@ -260,6 +271,8 @@ class EEStackUpgradeController(CementBaseController):
 
                     if self.app.pargs.wpcli:
                         EEFileUtils.chmod(self, "/usr/bin/wp", 0o775)
+                    if self.app.pargs.composer:
+                        EEFileUtils.chmod(self, "/usr/local/bin/composer", 0o775)
 
                 Log.info(self, "Successfully updated packages")
 
