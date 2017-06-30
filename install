@@ -57,7 +57,7 @@ readonly ee_distro_version=$(lsb_release -sc)
 # Checking linux distro
 if [ "$ee_linux_distro" != "Ubuntu" ] && [ "$ee_linux_distro" != "Debian" ]; then
     ee_lib_echo_fail "EasyEngine (ee) is made for Ubuntu and Debian only as of now"
-    ee_lib_echo_fail "You are free to fork EasyEngine (ee): https://github.com/rtCamp/easyengine/fork"
+    ee_lib_echo_fail "You are free to fork EasyEngine (ee): https://github.com/EasyEngine/easyengine/fork"
     ee_lib_echo_fail "EasyEngine (ee) only support Ubuntu 12.04/14.04 and Debian 7.x/8.x"
     exit 100
 fi
@@ -293,7 +293,7 @@ function ee_install()
         ee_branch=master
     fi
 
-    git clone -b $ee_branch https://github.com/EasyEngine/easyengine.git /tmp/easyengine --quiet > /dev/null \
+    git clone -b $ee_branch https://github.com/bnap00/easyengine.git /tmp/easyengine --quiet > /dev/null \
     || ee_lib_error "Unable to clone EasyEngine, exit status" $?
 
     cd /tmp/easyengine
