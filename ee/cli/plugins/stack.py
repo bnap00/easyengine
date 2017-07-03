@@ -1681,7 +1681,9 @@ class EEStackController(CementBaseController):
                 Log.debug(self, 'Extracting file /tmp/pma.tar.gz to '
                           'location /tmp/')
                 if not EEShellExec.cmd_exec(self, "which composer"):
-                    EEDownload.download(self,"composer")
+                    EEDownload.download(self, [["https://getcomposer.org/composer.phar",
+                            "/usr/local/bin/composer",
+                            "composer"]])
                 EEShellExec.cmd_exec(self,"cd /tmp/phpmyadmin-STABLE && composer install")
                 if not os.path.exists('{0}22222/htdocs/db'
                                       .format(EEVariables.ee_webroot)):

@@ -29,7 +29,7 @@ class EEVariables():
     # Get composer path
     ee_composer_path = os.popen('which composer | tr "\n" " "').read()
     if ee_composer_path == '':
-        ee_composer_path = '/usr/local/bin/composer '
+        ee_composer_path = '/usr/local/bin/composer'
 
     # Current date and time of System
     ee_date = datetime.datetime.now().strftime('%d%b%Y%H%M%S')
