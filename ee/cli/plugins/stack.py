@@ -72,8 +72,6 @@ class EEStackController(CementBaseController):
                 dict(help='Install Postfix stack', action='store_true')),
             (['--wpcli'],
                 dict(help='Install WPCLI stack', action='store_true')),
-            (['--composer'],
-                dict(help='Install composer stack', action='store_true')),
             (['--phpmyadmin'],
                 dict(help='Install PHPMyAdmin stack', action='store_true')),
             (['--adminer'],
@@ -1684,7 +1682,8 @@ class EEStackController(CementBaseController):
                     EEDownload.download(self, [["https://getcomposer.org/composer.phar",
                             "/usr/local/bin/composer",
                             "composer"]])
-                EEShellExec.cmd_exec(self,"cd /tmp/phpmyadmin-STABLE && composer install")
+                    EEShellExec.cmd_exec(self, "chmod 0775 /usr/local/bin/composer")
+                EEShellExec.cmd_exec(self,"cd /tmp/phpmyadmin-STABLE")
                 if not os.path.exists('{0}22222/htdocs/db'
                                       .format(EEVariables.ee_webroot)):
                     Log.debug(self, "Creating new  directory "
@@ -1721,11 +1720,13 @@ class EEStackController(CementBaseController):
                 Log.debug(self, 'Setting Privileges of webroot permission to  '
                           '{0}22222/htdocs/db/pma file '
                           .format(EEVariables.ee_webroot))
+                EEShellExec.cmd_exec(self, "cd {0}22222/htdocs/db/pma/ && composer install".format(EEVariables.ee_webroot))
                 EEFileUtils.chown(self, '{0}22222'
                                   .format(EEVariables.ee_webroot),
                                   EEVariables.ee_php_user,
                                   EEVariables.ee_php_user,
                                   recursive=True)
+                
             if any('/tmp/memcache.tar.gz' == x[1]
                     for x in packages):
                 Log.debug(self, "Extracting memcache.tar.gz to location"
@@ -1854,18 +1855,17 @@ class EEStackController(CementBaseController):
                 Log.debug(self, "Downloading composer "
                           "https://getcomposer.org/installer | php ")
                 try:
-                    EEShellExec.cmd_exec(self, "cd {0}22222/htdocs"
-                                         "/vimbadmin; curl"
-                                         " -sS https://getcomposer.org/"
-                                         "installer |"
-                                         " php".format(EEVariables.ee_webroot))
-                    Log.debug(self, "Installating of composer")
+                    if not EEShellExec.cmd_exec(self, "which composer"):
+                        EEDownload.download(self, [["https://getcomposer.org/composer.phar",
+                                                    "/usr/local/bin/composer",
+                                                    "composer"]])
+                    EEShellExec.cmd_exec(self, "chmod 0775 /usr/local/bin/composer")
+                    
                     EEShellExec.cmd_exec(self, "cd {0}22222/htdocs"
                                          "/vimbadmin && "
-                                         "php composer.phar install "
+                                         "composer install "
                                          "--prefer-dist"
-                                         " --no-dev && rm -f {1}22222/htdocs"
-                                         "/vimbadmin/composer.phar"
+                                         " --no-dev"
                                          .format(EEVariables.ee_webroot,
                                                  EEVariables.ee_webroot))
                 except CommandExecutionError as e:
@@ -2171,7 +2171,7 @@ class EEStackController(CementBaseController):
                (not self.app.pargs.php) and (not self.app.pargs.mysql) and
                (not self.app.pargs.postfix) and (not self.app.pargs.wpcli) and
                (not self.app.pargs.phpmyadmin) and (not self.app.pargs.hhvm)
-               and (not self.app.pargs.pagespeed) and (not self.app.pargs.composer)
+               and (not self.app.pargs.pagespeed) and
                (not self.app.pargs.adminer) and (not self.app.pargs.utils) and
                (not self.app.pargs.mailscanner) and (not self.app.pargs.all)
                and (not self.app.pargs.redis) and
@@ -2189,7 +2189,6 @@ class EEStackController(CementBaseController):
                 self.app.pargs.php = True
                 self.app.pargs.mysql = True
                 self.app.pargs.wpcli = True
-                self.app.pargs.composer = True 
                 self.app.pargs.postfix = True
 
             if self.app.pargs.admin:
@@ -2199,9 +2198,6 @@ class EEStackController(CementBaseController):
                 self.app.pargs.adminer = True
                 self.app.pargs.phpmyadmin = True
                 self.app.pargs.utils = True
-            
-            if self.app.pargs.phpmyadmin:
-                self.app.pargs.composer = True
 
             if self.app.pargs.mail:
                 self.app.pargs.nginx = True
@@ -2365,16 +2361,6 @@ class EEStackController(CementBaseController):
                     Log.debug(self, "WP-CLI is already installed")
                     Log.info(self, "WP-CLI is already installed")
 
-            if self.app.pargs.composer:
-                Log.debug(self, "Setting packages variable for composer")
-                if not EEShellExec.cmd_exec(self, "which composer"):
-                    packages = packages + [["https://getcomposer.org/composer.phar",
-                                            "/usr/local/bin/composer",
-                                            "composer"]]
-                else:
-                    Log.debug(self, "composer is already installed")
-                    Log.info(self, "composer is already installed")
-
             if self.app.pargs.phpmyadmin:
                 Log.debug(self, "Setting packages varible for phpMyAdmin ")
                 packages = packages + [["https://github.com/phpmyadmin/"
@@ -2521,7 +2507,7 @@ class EEStackController(CementBaseController):
         if ((not self.app.pargs.web) and (not self.app.pargs.admin) and
            (not self.app.pargs.mail) and (not self.app.pargs.nginx) and
            (not self.app.pargs.php) and (not self.app.pargs.php7) and (not self.app.pargs.mysql) and
-           (not self.app.pargs.postfix) and (not self.app.pargs.wpcli) and (not self.app.pargs.composer) and
+           (not self.app.pargs.postfix) and (not self.app.pargs.wpcli) and
            (not self.app.pargs.phpmyadmin) and (not self.app.pargs.hhvm) and
            (not self.app.pargs.adminer) and (not self.app.pargs.utils) and
            (not self.app.pargs.mailscanner) and (not self.app.pargs.all) and
@@ -2623,12 +2609,6 @@ class EEStackController(CementBaseController):
                 packages = packages + ['/usr/bin/wp']
             else:
                 Log.warn(self, "WP-CLI is not installed with EasyEngine")
-        if self.app.pargs.composer:
-            Log.debug(self, "Removing package variable of composer ")
-            if os.path.isfile('/usr/local/bin/composer'):
-                packages = packages + ['/usr/local/bin/composer']
-            else:
-                Log.warn(self, "composer is not installed with EasyEngine")
         if self.app.pargs.phpmyadmin:
             Log.debug(self, "Removing package variable of phpMyAdmin ")
             packages = packages + ['{0}22222/htdocs/db/pma'
@@ -2705,7 +2685,7 @@ class EEStackController(CementBaseController):
         if ((not self.app.pargs.web) and (not self.app.pargs.admin) and
            (not self.app.pargs.mail) and (not self.app.pargs.nginx) and
            (not self.app.pargs.php) and (not self.app.pargs.php7) and (not self.app.pargs.mysql) and
-           (not self.app.pargs.postfix) and (not self.app.pargs.wpcli) and (not self.app.pargs.composer) and
+           (not self.app.pargs.postfix) and (not self.app.pargs.wpcli) and
            (not self.app.pargs.phpmyadmin) and (not self.app.pargs.hhvm) and
            (not self.app.pargs.adminer) and (not self.app.pargs.utils) and
            (not self.app.pargs.mailscanner) and (not self.app.pargs.all) and
@@ -2726,7 +2706,6 @@ class EEStackController(CementBaseController):
             self.app.pargs.php = True
             self.app.pargs.mysql = True
             self.app.pargs.wpcli = True
-            self.app.pargs.composer = True
             self.app.pargs.postfix = True
 
         if self.app.pargs.admin:
@@ -2806,12 +2785,6 @@ class EEStackController(CementBaseController):
                 packages = packages + ['/usr/bin/wp']
             else:
                 Log.warn(self, "WP-CLI is not installed with EasyEngine")
-        if self.app.pargs.composer:
-            Log.debug(self, "Purge package variable composer")
-            if os.path.isfile('/usr/local/bin/composer'):
-                packages = packages + ['/usr/local/bin/composer']
-            else:
-                Log.warn(self, "composer is not installed with EasyEngine")
         if self.app.pargs.phpmyadmin:
             packages = packages + ['{0}22222/htdocs/db/pma'.
                                    format(EEVariables.ee_webroot)]

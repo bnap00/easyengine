@@ -74,12 +74,12 @@ _ee_complete()
             # HANDLE EVERYTHING AFTER THE THIRD LEVEL NAMESPACE
             "install" | "purge" | "remove" )
                 COMPREPLY=( $(compgen \
-                              -W "--web --admin --mail --nginx --php --php7 --mysql --postfix --wpcli --composer --phpmyadmin --adminer --utils --all --mailscanner --hhvm --redis --phpredisadmin" \
+                              -W "--web --admin --mail --nginx --php --php7 --mysql --postfix --wpcli --phpmyadmin --adminer --utils --all --mailscanner --hhvm --redis --phpredisadmin" \
                               -- $cur) )
                 ;;
             "upgrade" )
                 COMPREPLY=( $(compgen \
-                              -W "--web --mail --nginx --php --php7 --mysql --postfix --all --hhvm --php56 --no-prompt --wpcli --composer" \
+                              -W "--web --mail --nginx --php --php7 --mysql --postfix --all --hhvm --php56 --no-prompt --wpcli" \
                               -- $cur) )
                 ;;
             "start" | "stop" | "reload" | "restart" | "status")
@@ -278,9 +278,9 @@ _ee_complete()
                               -- $cur) )
             ;;
 
-        "--web" | "--admin" | "--mail" | "--nginx" | "--php" | "--php7" | "--mysql" | "--postfix" | "--wpcli" | "--composer" | "--phpmyadmin" | "--adminer" | "--utils" | "--memcache" | "--dovecot" | "--redis | --phpredisadmin")
+        "--web" | "--admin" | "--mail" | "--nginx" | "--php" | "--php7" | "--mysql" | "--postfix" | "--wpcli" | "--phpmyadmin" | "--adminer" | "--utils" | "--memcache" | "--dovecot" | "--redis | --phpredisadmin")
             if [[ ${COMP_WORDS[2]} == "install" || ${COMP_WORDS[2]} == "purge" || ${COMP_WORDS[2]} == "remove" ]]; then
-                retlist="--web --admin --mail --nginx --php --php7 --mysql --postfix --wpcli --composer --phpmyadmin --adminer --utils --memcache --dovecot --redis --phpredisadmin"
+                retlist="--web --admin --mail --nginx --php --php7 --mysql --postfix --wpcli --phpmyadmin --adminer --utils --memcache --dovecot --redis --phpredisadmin"
             elif [[ ${COMP_WORDS[2]} == "start" || ${COMP_WORDS[2]} == "reload" || ${COMP_WORDS[2]} == "restart" || ${COMP_WORDS[2]} == "stop" ]]; then
                     retlist="--nginx --php --php7 --mysql --postfix --memcache --dovecot --redis"
             elif [[ ${COMP_WORDS[1]} == "debug" ]]; then

@@ -57,12 +57,6 @@ class CliTestCaseStack(test.EETestCase):
         self.app.run()
         self.app.close()
 
-    def test_ee_cli_stack_install_composer(self):
-        self.app = get_test_app(argv=['stack', 'install', '--composer'])
-        self.app.setup()
-        self.app.run()
-        self.app.close()
-
     def test_ee_cli_stack_install_phpmyadmin(self):
         self.app = get_test_app(argv=['stack', 'install', '--phpmyadmin'])
         self.app.setup()
